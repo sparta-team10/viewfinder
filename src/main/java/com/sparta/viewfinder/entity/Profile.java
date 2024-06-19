@@ -1,11 +1,14 @@
 package com.sparta.viewfinder.entity;
 
+import com.sparta.viewfinder.dto.ProfileUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "profile")
 public class Profile extends Timestamped {
@@ -24,7 +27,15 @@ public class Profile extends Timestamped {
 
     private String sns;
 
+
+
     public Profile(User user){
         this.user = user;
+    }
+
+    public void update(ProfileUpdateRequestDto profileUpdateRequestDto){
+        this.headline = profileUpdateRequestDto.getHeadline();
+        this.phoneNumber = profileUpdateRequestDto.getPhoneNumber();
+        this.sns = profileUpdateRequestDto.getSns();
     }
 }
