@@ -23,9 +23,6 @@ public class UserService {
     public User createUser(UserRequestDto request) {
         User saveUser = new User(request);
         userRepository.save(saveUser);
-//        Profile profile = new Profile();
-//        profile.setUserId(saveUser.getId());
-//        profileRepository.save(profile);
         return saveUser;
     }
 

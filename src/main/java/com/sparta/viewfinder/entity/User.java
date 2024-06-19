@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "user")
 public class User extends Timestamped{
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,6 +32,9 @@ public class User extends Timestamped{
 
     private String statusUpdate;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private Profile profile;
+
 
 
     public User(UserRequestDto requestDto) {
@@ -37,5 +42,6 @@ public class User extends Timestamped{
         this.password = requestDto.getPassword();
         this.name = requestDto.getName();
         this.email = requestDto.getEmail();
+        this.profile = new Profile(this);
     }
 }
