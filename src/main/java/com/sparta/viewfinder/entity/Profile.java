@@ -18,13 +18,13 @@ public class Profile extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private String name;
-
     private String headline;
-
-    private String email;
 
     private String phoneNumber;
 
     private String sns;
+
+    public Profile(User user){
+        this.user = user;
+    }
 }
