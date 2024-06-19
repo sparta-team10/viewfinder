@@ -14,11 +14,15 @@ public class User extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String username;
 
     private String password;
+
+    private String name;
+
+    private String email;
 
     private UserStatusEnum status;
 
@@ -26,8 +30,12 @@ public class User extends Timestamped{
 
     private String statusUpdate;
 
+
+
     public User(UserRequestDto requestDto) {
         this.username = requestDto.getUserName();
         this.password = requestDto.getPassword();
+        this.name = requestDto.getName();
+        this.email = requestDto.getEmail();
     }
 }
