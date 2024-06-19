@@ -11,14 +11,11 @@ public class ProfileAllResponseDto {
     private Long userId;
     private String name;
     private String headline;
-//    private String email;
-//    private String phoneNumber;
-//    private String sns;
 
     public ProfileAllResponseDto(Profile profile) {
         this.id = profile.getId();
         this.userId = profile.getUser().getId();
-        this.name = profile.getName();
+        this.name = profile.getUser().getName();
         this.headline = profile.getHeadline();
     }
 }

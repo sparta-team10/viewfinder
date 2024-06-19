@@ -18,9 +18,9 @@ public class ProfileDetailResponseDto {
     public ProfileDetailResponseDto(Profile profile) {
         this.id = profile.getId();
         this.userId = profile.getUser().getId();
-        this.name = profile.getName();
+        this.name = profile.getUser().getName();
         this.headline = profile.getHeadline();
-        this.email = profile.getEmail();
+        this.email = profile.getUser().getEmail();
         this.phoneNumber = profile.getPhoneNumber();
         this.sns = profile.getSns();
     }
