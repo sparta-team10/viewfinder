@@ -19,9 +19,15 @@ public class User extends Timestamped{
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private UserStatusEnum status;
 
     private String refreshToken;
 
     private String statusUpdate;
+
+    public boolean logout(){
+        refreshToken = null;
+        return refreshToken == null ? true : false;
+    }
 }
