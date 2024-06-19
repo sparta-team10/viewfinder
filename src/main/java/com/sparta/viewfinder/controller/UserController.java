@@ -21,10 +21,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    // create
+    // 회원가입
     @PostMapping("/sign-up") // http://localhost:8080/sign-up POST
     public ResponseEntity<User> createUser(@RequestBody UserRequestDto request) {
-        // { cardNumber:" 16자리 "}
         return ResponseEntity.ok(userService.createUser(request));
     }
 
