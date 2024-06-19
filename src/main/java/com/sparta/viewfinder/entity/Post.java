@@ -20,6 +20,9 @@ public class Post extends Timestamped{
     private User user;
 
     @Column
+    private String title;
+
+    @Column
     private String content;
 
 }
