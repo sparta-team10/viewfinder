@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
-import org.springframework.validation.FieldError;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @Builder
 @RequiredArgsConstructor
 public class ErrorResponse {
-    private final String code;
+    private final int code;
     private final String message;
     private final HttpStatus httpStatus;
 

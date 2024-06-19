@@ -1,86 +1,87 @@
 package com.sparta.viewfinder.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.sparta.viewfinder.exception.*;
+import com.sparta.viewfinder.exception.CommonErrorCode;
+import com.sparta.viewfinder.exception.ErrorCode;
+import com.sparta.viewfinder.exception.ErrorResponse;
+import com.sparta.viewfinder.exception.MismatchException;
+import com.sparta.viewfinder.exception.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionController extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllException(Exception ex) {
-        log.warn("handleAllException", ex);
-        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
-        return handleExceptionInternal(errorCode, ex.getMessage());
-    }
-
+    // NotFoundException 예외처리
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Object> handleCustomException(NotFoundException e) {
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException e) {
+        log.warn("Not Found Exception");
         ErrorCode errorCode = e.getErrorCode();
-        return handleExceptionInternal(errorCode);
+        return handleExceptionInternal(errorCode, e);
     }
 
-
+    // MismatchException 예외처리
     @ExceptionHandler(MismatchException.class)
-    public ResponseEntity<Object> handleCustomException(MismatchException e) {
+    public ResponseEntity<Object> handleMismatchException(MismatchException e) {
+        log.warn("Mismatch Exception");
         ErrorCode errorCode = e.getErrorCode();
-        return handleExceptionInternal(errorCode);
+        return handleExceptionInternal(errorCode, e);
+    }
+
+//    // MethodArgumentNotValidException 예외처리
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public String handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+//        log.warn("Bind Exception");
+//        ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
+//        return "why";//handleExceptionInternal(errorCode, e);
+//    }
+
+    // 그 외 예외처리들
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleAllException(Exception e) {
+        log.warn("handleAllException: {}", e.getMessage());
+        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
+        return handleExceptionInternal(errorCode, e);
+    }
+
+    // ResponseEntity 생성 함수
+    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, Exception e) {
+        int value = errorCode.getHttpStatus().value();
+        String message = e.getMessage();
+        HttpStatus httpStatus = errorCode.getHttpStatus();
+
+        if (message == null) {
+            message = errorCode.getMessage();
+        }
+
+        return ResponseEntity.status(httpStatus)
+                .body(
+                        ErrorResponse.builder()
+                                .code(value)
+                                .message(message)
+                                .httpStatus(httpStatus)
+                                .build()
+                );
     }
 
 
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(errorCode));
-    }
-
-    private ErrorResponse makeErrorResponse(ErrorCode errorCode) {
-        return ErrorResponse.builder()
-                .code(errorCode.name())
-                .message(errorCode.getMessage())
-                .httpStatus(errorCode.getHttpStatus())
-                .build();
-    }
-
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(errorCode, message));
-    }
-
-    private ErrorResponse makeErrorResponse(ErrorCode errorCode, String message) {
-        return ErrorResponse.builder()
-                .code(errorCode.name())
-                .message(message)
-                .httpStatus(errorCode.getHttpStatus())
-                .build();
-    }
-
-    private ResponseEntity<Object> handleExceptionInternal(BindException e, ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(e, errorCode));
-    }
-
-    private ErrorResponse makeErrorResponse(BindException e, ErrorCode errorCode) {
+    /*private ErrorResponse makeErrorResponse(BindException e, ErrorCode errorCode) {
         List<ErrorResponse.ValidationError> validationErrorList = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(ErrorResponse.ValidationError::of)
                 .collect(Collectors.toList());
 
+
         return ErrorResponse.builder()
-                .code(errorCode.name())
+                .code(errorCode.getHttpStatus().value())
                 .message(errorCode.getMessage())
                 .httpStatus(errorCode.getHttpStatus())
                 .errors(validationErrorList)
                 .build();
-    }
+    }*/
 }
