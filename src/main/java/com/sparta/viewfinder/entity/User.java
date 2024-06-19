@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "user")
 public class User extends Timestamped{
 
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,10 +20,7 @@ public class User extends Timestamped{
 
     private String password;
 
-    private String name;
-
-    private String email;
-
+    @Enumerated(EnumType.STRING)
     private UserStatusEnum status;
 
     private String refreshToken;
@@ -43,5 +38,10 @@ public class User extends Timestamped{
         this.name = requestDto.getName();
         this.email = requestDto.getEmail();
         this.profile = new Profile(this);
+    }
+
+    public boolean logout(){
+        refreshToken = null;
+        return refreshToken == null ? true : false;
     }
 }
