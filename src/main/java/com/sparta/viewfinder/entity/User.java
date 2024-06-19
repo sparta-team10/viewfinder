@@ -1,5 +1,6 @@
 package com.sparta.viewfinder.entity;
 
+import com.sparta.viewfinder.dto.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +25,9 @@ public class User extends Timestamped{
     private String refreshToken;
 
     private String statusUpdate;
+
+    public User(UserRequestDto requestDto) {
+        this.username = requestDto.getUserName();
+        this.password = requestDto.getPassword();
+    }
 }
