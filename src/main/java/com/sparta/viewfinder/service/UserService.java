@@ -3,6 +3,7 @@ package com.sparta.viewfinder.service;
 
 import com.sparta.viewfinder.dto.UserRequestDto;
 
+import com.sparta.viewfinder.dto.UserResponseDto;
 import com.sparta.viewfinder.entity.Profile;
 
 import com.sparta.viewfinder.entity.User;
@@ -25,7 +26,7 @@ public class UserService {
     private Long id;
 
 
-    public User createUser(UserRequestDto request) {
+    public UserResponseDto createUser(UserRequestDto request) {
 
         User saveUser = new User(request);
         Optional<User> user = userRepository.findByUsername(request.getUsername());
