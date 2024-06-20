@@ -1,6 +1,7 @@
 package com.sparta.viewfinder.controller;
 
 import com.sparta.viewfinder.exception.CommonErrorCode;
+import com.sparta.viewfinder.exception.DuplicatedException;
 import com.sparta.viewfinder.exception.ErrorCode;
 import com.sparta.viewfinder.exception.ErrorResponse;
 import com.sparta.viewfinder.exception.MismatchException;
@@ -34,6 +35,14 @@ public class GlobalExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MismatchException.class)
     public ResponseEntity<Object> handleCustomException(MismatchException e) {
         log.warn("Mismatch Exception");
+        ErrorCode errorCode = e.getErrorCode();
+        return handleExceptionInternal(errorCode, e);
+    }
+
+    // DuplicatedException 예외처리
+    @ExceptionHandler(DuplicatedException.class)
+    public ResponseEntity<Object> handleCustomException(DuplicatedException e) {
+        log.warn("Duplicated Exception");
         ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode, e);
     }

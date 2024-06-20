@@ -8,10 +8,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum UserErrorCode implements ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,
-            "유저가 없습니다.");
-
-
-
+            "유저가 없습니다."),
+    DUPLICATED_USER(HttpStatus.NOT_FOUND,
+                    "중복된 유저입니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -1,16 +1,16 @@
 package com.sparta.viewfinder.service;
 
-
+import com.sparta.viewfinder.dto.LoginRequestDto;
 import com.sparta.viewfinder.dto.UserRequestDto;
 import com.sparta.viewfinder.dto.UserResponseDto;
 import com.sparta.viewfinder.entity.User;
+import com.sparta.viewfinder.exception.DuplicatedException;
 import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.exception.UserErrorCode;
-import org.springframework.stereotype.Service;
 import com.sparta.viewfinder.repository.UserRepository;
-import com.sparta.viewfinder.dto.LoginRequestDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
@@ -24,11 +24,13 @@ public class UserService {
 
 
     public UserResponseDto createUser(UserRequestDto request) {
+
         User saveUser = new User(request);
         Optional<User> user = userRepository.findByUsername(request.getUsername());
 
-        if( user.isPresent() ){
-            throw new RuntimeException("사용중인 이름입니다");
+
+        if(user.isPresent()){
+            throw new DuplicatedException(UserErrorCode.DUPLICATED_USER);
         }
         userRepository.save(saveUser);
 
