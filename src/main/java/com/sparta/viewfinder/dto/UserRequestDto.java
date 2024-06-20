@@ -1,7 +1,5 @@
 package com.sparta.viewfinder.dto;
 
-import com.sparta.viewfinder.entity.UserStatusEnum;
-import jakarta.persistence.Entity;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;

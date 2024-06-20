@@ -1,23 +1,18 @@
 package com.sparta.viewfinder.service;
 
-
+import com.sparta.viewfinder.dto.LoginRequestDto;
 import com.sparta.viewfinder.dto.UserRequestDto;
-
 import com.sparta.viewfinder.dto.UserResponseDto;
-import com.sparta.viewfinder.entity.Profile;
-
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.exception.DuplicatedException;
 import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.exception.UserErrorCode;
-import org.springframework.stereotype.Service;
 import com.sparta.viewfinder.repository.UserRepository;
-import com.sparta.viewfinder.dto.LoginRequestDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
 
 @Service
 @RequiredArgsConstructor
