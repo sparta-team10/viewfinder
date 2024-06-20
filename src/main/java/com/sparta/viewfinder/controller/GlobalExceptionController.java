@@ -6,11 +6,17 @@ import com.sparta.viewfinder.exception.ErrorResponse;
 import com.sparta.viewfinder.exception.MismatchException;
 import com.sparta.viewfinder.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
@@ -18,7 +24,7 @@ public class GlobalExceptionController extends ResponseEntityExceptionHandler {
 
     // NotFoundException 예외처리
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Object> handleNotFoundException(NotFoundException e) {
+    public ResponseEntity<Object> handleCustomException(NotFoundException e) {
         log.warn("Not Found Exception");
         ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode, e);
@@ -26,19 +32,22 @@ public class GlobalExceptionController extends ResponseEntityExceptionHandler {
 
     // MismatchException 예외처리
     @ExceptionHandler(MismatchException.class)
-    public ResponseEntity<Object> handleMismatchException(MismatchException e) {
+    public ResponseEntity<Object> handleCustomException(MismatchException e) {
         log.warn("Mismatch Exception");
         ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode, e);
     }
 
-//    // MethodArgumentNotValidException 예외처리
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public String handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-//        log.warn("Bind Exception");
-//        ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
-//        return "why";//handleExceptionInternal(errorCode, e);
-//    }
+    // MethodArgumentNotValidException 예외처리
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+        log.warn("Method Argument Not Valid Exception");
+        ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
+        return handleExceptionInternal(errorCode, e);
+    }
 
     // 그 외 예외처리들
     @ExceptionHandler(Exception.class)
@@ -58,30 +67,24 @@ public class GlobalExceptionController extends ResponseEntityExceptionHandler {
             message = errorCode.getMessage();
         }
 
-        return ResponseEntity.status(httpStatus)
-                .body(
-                        ErrorResponse.builder()
-                                .code(value)
-                                .message(message)
-                                .httpStatus(httpStatus)
-                                .build()
-                );
+        ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
+                .code(value)
+                .message(message)
+                .httpStatus(httpStatus);
+
+
+        // BindException 일 경우 Validation 에러 리스트도 함께 출력
+        if (e instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
+            List<ErrorResponse.ValidationError> validationErrorList = methodArgumentNotValidException.getBindingResult()
+                    .getFieldErrors()
+                    .stream()
+                    .map(ErrorResponse.ValidationError::of)
+                    .toList();
+
+            builder.errors(validationErrorList);
+        }
+
+        return ResponseEntity.status(httpStatus).body(builder.build());
     }
 
-
-    /*private ErrorResponse makeErrorResponse(BindException e, ErrorCode errorCode) {
-        List<ErrorResponse.ValidationError> validationErrorList = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(ErrorResponse.ValidationError::of)
-                .collect(Collectors.toList());
-
-
-        return ErrorResponse.builder()
-                .code(errorCode.getHttpStatus().value())
-                .message(errorCode.getMessage())
-                .httpStatus(errorCode.getHttpStatus())
-                .errors(validationErrorList)
-                .build();
-    }*/
 }
