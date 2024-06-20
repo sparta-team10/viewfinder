@@ -2,7 +2,9 @@ package com.sparta.viewfinder.service;
 
 import com.sparta.viewfinder.dto.LoginRequestDto;
 import com.sparta.viewfinder.dto.UserRequestDto;
+
 import com.sparta.viewfinder.dto.UserResponseDto;
+import com.sparta.viewfinder.entity.Profile;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.exception.DuplicatedException;
 import com.sparta.viewfinder.exception.NotFoundException;
@@ -27,7 +29,6 @@ public class UserService {
 
         User saveUser = new User(request);
         Optional<User> user = userRepository.findByUsername(request.getUsername());
-
 
         if(user.isPresent()){
             throw new DuplicatedException(UserErrorCode.DUPLICATED_USER);
