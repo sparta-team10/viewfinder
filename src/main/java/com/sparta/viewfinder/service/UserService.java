@@ -2,9 +2,7 @@ package com.sparta.viewfinder.service;
 
 import com.sparta.viewfinder.dto.LoginRequestDto;
 import com.sparta.viewfinder.dto.UserRequestDto;
-
 import com.sparta.viewfinder.dto.UserResponseDto;
-import com.sparta.viewfinder.entity.Profile;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.exception.DuplicatedException;
 import com.sparta.viewfinder.exception.NotFoundException;
