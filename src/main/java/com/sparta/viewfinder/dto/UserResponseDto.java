@@ -8,12 +8,11 @@ public class UserResponseDto {
     private String username;
     private String name;
     private String email;
-
+//    private String creatAt;
 
     public UserResponseDto(User user) {
         this.username = user.getUsername();
         this.name = user.getName();
         this.email = user.getEmail();
-
     }
 }

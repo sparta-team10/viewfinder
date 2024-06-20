@@ -14,8 +14,8 @@ import java.util.List;
 @RequestMapping("/comments")
 public class CommentController {
     private final CommentService commentService;
-    private static final String DELETE_POST_SUCCESS_MESSAGE = "댓글이 삭제되었습니다";
-
+    private static final String DELETE_COMMENT_SUCCESS_MESSAGE = "댓글이 삭제되었습니다";
+    private static final String NOT_FOUND_COMMENT = "댓글을 찾을 수 없습니다";
 
     // 댓글 생성
     @PostMapping
@@ -29,7 +29,7 @@ public class CommentController {
     public ResponseEntity<Object> readComment(@RequestParam Long postId) {
         List<CommentResponseDto> res = commentService.readComment(postId);
         if (res.isEmpty()) {
-            return ResponseEntity.ok("There are no comments.");
+            return ResponseEntity.ok().body(NOT_FOUND_COMMENT);
         } else {
             return ResponseEntity.ok(res);
         }
@@ -46,6 +46,6 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteComment(@PathVariable Long id, @RequestParam Long userId) {
         commentService.deleteComment(id, userId);
-        return ResponseEntity.ok().body(DELETE_POST_SUCCESS_MESSAGE);
+        return ResponseEntity.ok().body(DELETE_COMMENT_SUCCESS_MESSAGE);
     }
 }

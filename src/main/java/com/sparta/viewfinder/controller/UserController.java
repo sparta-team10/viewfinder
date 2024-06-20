@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private static final String SUCCESS_LOGIN = "로그인 성공";
+    private static final String FAIL_LOGIN = "로그인 실패";
+    private static final String SUCCESS_SIGN_UP = "회원가입에 성공하였습니다.";
+
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -25,20 +29,20 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/sign-up") // http://localhost:8080/sign-up POST
-    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto request) { // Valid를 달아야 검증 작동
-
-        return ResponseEntity.ok(userService.createUser(request));
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserRequestDto request) { // Valid를 달아야 검증 작동
+        userService.createUser(request);
+        return ResponseEntity.ok().body(SUCCESS_SIGN_UP);
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto) {
         userService.login(requestDto);
-        return ResponseEntity.ok().body("로그인 성공");
+        return ResponseEntity.ok().body(SUCCESS_LOGIN);
     }
 
     @PutMapping("/logout/{id}")
     public ResponseEntity<String> logout(@PathVariable Long id) {
         userService.logout(id);
-        return ResponseEntity.ok().body("로그아웃 성공");
+        return ResponseEntity.ok().body(FAIL_LOGIN);
     }
 }

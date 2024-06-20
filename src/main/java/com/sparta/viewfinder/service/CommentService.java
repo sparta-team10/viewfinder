@@ -41,7 +41,7 @@ public class CommentService {
         Comment comment = new Comment(user, post, commentRequestDto.getContent());
         commentRepository.save(comment);
 
-        return new CommentResponseDto(comment.getId(), userId, postId, comment.getContent());
+        return new CommentResponseDto(comment);
     }
 
     // 특정 게시물의 댓글 조회
@@ -56,7 +56,7 @@ public class CommentService {
 
         for (Comment comment : commentList) {
             Long userId = comment.getUser().getId();
-            res.add(new CommentResponseDto(comment.getId(), userId, postId, comment.getContent()));
+            res.add(new CommentResponseDto(comment));
         }
         return res;
     }
@@ -74,11 +74,11 @@ public class CommentService {
             throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
         comment.update(commentRequestDto);
-        return new CommentResponseDto(comment.getId(), userId, comment.getPost().getId(), comment.getContent());
+        return new CommentResponseDto(comment);
     }
 
     // 댓글 삭제
-    public String deleteComment(Long userId, Long commentId) {
+    public String deleteComment(Long commentId, Long userId) {
         // 해당 댓글이 없는경우 -> Comment에 관한 ErrorCode 클래스 만들고 사용
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NotFoundException(CommentErrorCode.COMMENT_NOT_FOUND));

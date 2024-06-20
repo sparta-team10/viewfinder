@@ -31,6 +31,8 @@ public class User extends Timestamped{
 
     private String statusUpdate;
 
+    private String userRole;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private Profile profile;
 
@@ -41,6 +43,8 @@ public class User extends Timestamped{
         this.password = requestDto.getPassword();
         this.name = requestDto.getName();
         this.email = requestDto.getEmail();
+        this.status = UserStatusEnum.USER;
+//        this.userRole = null; -> 추가해야함.
         this.profile = new Profile(this);
     }
 
