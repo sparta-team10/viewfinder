@@ -1,11 +1,6 @@
 package com.sparta.viewfinder.controller;
 
-import com.sparta.viewfinder.exception.CommonErrorCode;
-import com.sparta.viewfinder.exception.DuplicatedException;
-import com.sparta.viewfinder.exception.ErrorCode;
-import com.sparta.viewfinder.exception.ErrorResponse;
-import com.sparta.viewfinder.exception.MismatchException;
-import com.sparta.viewfinder.exception.NotFoundException;
+import com.sparta.viewfinder.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,6 +41,15 @@ public class GlobalExceptionController extends ResponseEntityExceptionHandler {
         ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode, e);
     }
+
+    // PatternMismatchException 예외처리
+    @ExceptionHandler(PatternMismatchException.class)
+    public ResponseEntity<Object> handleCustomException(PatternMismatchException e) {
+        log.warn("Pattern Mismatch Exception");
+        ErrorCode errorCode = e.getErrorCode();
+        return handleExceptionInternal(errorCode, e);
+    }
+
 
     // MethodArgumentNotValidException 예외처리
     @Override
