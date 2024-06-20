@@ -5,14 +5,12 @@ import com.sparta.viewfinder.dto.CommentResponseDto;
 import com.sparta.viewfinder.entity.Comment;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
-import com.sparta.viewfinder.exception.CommonErrorCode;
-import com.sparta.viewfinder.exception.MismatchException;
-import com.sparta.viewfinder.exception.NotFoundException;
-import com.sparta.viewfinder.exception.UserErrorCode;
+import com.sparta.viewfinder.exception.*;
 import com.sparta.viewfinder.repository.CommentRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +33,9 @@ public class CommentService {
                 () -> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
 
 
-        // 게시물을 찾을 수 없을 때
+        // 게시물을 찾을 수 없을 때 -> Post에 관한 ErrorCode 클래스 만들고 사용
         Post post = postRepository.findById(postId).orElseThrow(
-                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
+                () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND));
 
 
         Comment comment = new Comment(user, post, commentRequestDto.getContent());
@@ -48,9 +46,9 @@ public class CommentService {
 
     // 특정 게시물의 댓글 조회
     public List<CommentResponseDto> readComment(Long postId) {
-        // 게시물을 찾을 수 없을 때
+        // 게시물을 찾을 수 없을 때 -> Post에 관한 ErrorCode 클래스 만들고 사용
         if (!postRepository.existsById(postId)) {
-            throw new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND);
+            throw new NotFoundException(PostErrorCode.POST_NOT_FOUND);
         }
 
         List<Comment> commentList = commentRepository.findAllByPostId(postId);
@@ -67,9 +65,9 @@ public class CommentService {
     @Transactional
     public CommentResponseDto updateComment(Long userId, Long commentId,
                                             CommentRequestDto commentRequestDto) {
-        // 해당 댓글이 없는경우
+        // 해당 댓글이 없는경우 -> Comment에 관한 ErrorCode 클래스 만들고 사용
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
+                () -> new NotFoundException(CommentErrorCode.COMMENT_NOT_FOUND));
 
         // 본인 작성 댓글만 수정 가능
         if (!Objects.equals(comment.getUser().getId(), userId)) {
@@ -81,15 +79,16 @@ public class CommentService {
 
     // 댓글 삭제
     public String deleteComment(Long userId, Long commentId) {
-        // 해당 댓글이 없는경우
+        // 해당 댓글이 없는경우 -> Comment에 관한 ErrorCode 클래스 만들고 사용
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
+                () -> new NotFoundException(CommentErrorCode.COMMENT_NOT_FOUND));
 
         // 본인 작성 댓글만 수정 가능
         if (!Objects.equals(comment.getUser().getId(), userId)) {
             throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
         commentRepository.delete(comment);
-        return "Comment deletion was successful.";
+        return "성공했습니다.";
     }
+
 }

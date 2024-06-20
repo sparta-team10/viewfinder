@@ -35,7 +35,7 @@ public class User extends Timestamped{
     private Profile profile;
 
 
-
+    //status 추가 (USER)
     public User(UserRequestDto requestDto) {
         this.username = requestDto.getUsername();
         this.password = requestDto.getPassword();
