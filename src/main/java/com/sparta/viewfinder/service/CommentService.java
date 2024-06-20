@@ -6,7 +6,9 @@ import com.sparta.viewfinder.entity.Comment;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.exception.CommonErrorCode;
+import com.sparta.viewfinder.exception.MismatchException;
 import com.sparta.viewfinder.exception.NotFoundException;
+import com.sparta.viewfinder.exception.UserErrorCode;
 import com.sparta.viewfinder.repository.CommentRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
@@ -28,18 +30,17 @@ public class CommentService {
 
     // 댓글 생성, 등록
     public CommentResponseDto createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
+        // 사용자를 찾을 수 없을 때
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
+
 
         // 게시물을 찾을 수 없을 때
         Post post = postRepository.findById(postId).orElseThrow(
-                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND)
-                );
+                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-        // 사용자를 찾을 수 없을 때
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND)
-        );
 
-        Comment comment = new Comment(user, postId, commentRequestDto.getContent());
+        Comment comment = new Comment(user, post, commentRequestDto.getContent());
         commentRepository.save(comment);
 
         return new CommentResponseDto(comment.getId(), userId, postId, comment.getContent());
@@ -47,8 +48,14 @@ public class CommentService {
 
     // 특정 게시물의 댓글 조회
     public List<CommentResponseDto> readComment(Long postId) {
+        // 게시물을 찾을 수 없을 때
+        if (!postRepository.existsById(postId)) {
+            throw new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND);
+        }
+
         List<Comment> commentList = commentRepository.findAllByPostId(postId);
         List<CommentResponseDto> res = new ArrayList<>();
+
         for (Comment comment : commentList) {
             Long userId = comment.getUser().getId();
             res.add(new CommentResponseDto(comment.getId(), userId, postId, comment.getContent()));
@@ -59,34 +66,30 @@ public class CommentService {
     // 댓글 수정
     @Transactional
     public CommentResponseDto updateComment(Long userId, Long commentId,
-                                            CommentRequestDto commentRequestDto) throws IllegalAccessException {
+                                            CommentRequestDto commentRequestDto) {
         // 해당 댓글이 없는경우
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("Not found comment")
-        );
+                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         // 본인 작성 댓글만 수정 가능
         if (!Objects.equals(comment.getUser().getId(), userId)) {
-            throw new IllegalAccessException("You are not the author of this comment.");
+            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
-
-        comment.setContent(commentRequestDto.getContent());
-
-        return new CommentResponseDto(comment.getId(), userId, comment.getPostId(), comment.getContent());
+        comment.update(commentRequestDto);
+        return new CommentResponseDto(comment.getId(), userId, comment.getPost().getId(), comment.getContent());
     }
 
     // 댓글 삭제
-    public Boolean deleteComment(Long userId, Long commentId) throws IllegalAccessException {
+    public String deleteComment(Long userId, Long commentId) {
         // 해당 댓글이 없는경우
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("Not found comment")
-        );
+                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-        // 본인 작성 댓글만 삭제 가능
+        // 본인 작성 댓글만 수정 가능
         if (!Objects.equals(comment.getUser().getId(), userId)) {
-            throw new IllegalAccessException("You are not the author of this comment.");
+            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
         commentRepository.delete(comment);
-        return true;
+        return "Comment deletion was successful.";
     }
 }

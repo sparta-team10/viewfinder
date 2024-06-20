@@ -1,6 +1,6 @@
 package com.sparta.viewfinder.entity;
 
-import jakarta.persistence.CascadeType;
+import com.sparta.viewfinder.dto.CommentRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,30 +24,25 @@ public class Comment extends Timestamped{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
-    private Post post;*/
+    private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Long postId;
-
-    @Setter
     @Column(nullable = false)
     private String content;
 
     public Comment(User user, Post post, String content) {
         this.user = user;
-        //this.post = post;
+        this.post = post;
         this.content = content;
     }
 
-    // 임시 생성자
-    public Comment(User user, Long postId, String content) {
-        this.user = user;
-        this.postId = postId;
-        this.content = content;
+    public void update(CommentRequestDto commentRequestDto) {
+        this.content = commentRequestDto.getContent();
     }
+
 }
