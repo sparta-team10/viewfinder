@@ -5,6 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class NotFoundException extends RuntimeException {
+public class DuplicatedException extends RuntimeException{
     private final ErrorCode errorCode;
 }

@@ -1,6 +1,5 @@
 package com.sparta.viewfinder.dto;
 
-import com.sparta.viewfinder.entity.Profile;
 import lombok.Getter;
 
 @Getter
