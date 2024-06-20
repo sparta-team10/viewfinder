@@ -8,7 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ProfileDetailResponseDto {
     private Long id;
-    private Long userId;
     private String name;
     private String headline;
     private String email;
@@ -17,7 +16,6 @@ public class ProfileDetailResponseDto {
 
     public ProfileDetailResponseDto(Profile profile) {
         this.id = profile.getId();
-        this.userId = profile.getUser().getId();
         this.name = profile.getUser().getName();
         this.headline = profile.getHeadline();
         this.email = profile.getUser().getEmail();
