@@ -16,18 +16,16 @@ public class Comment extends Timestamped{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*
-    // post가 삭제되면 함께 삭제되도록 하기
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphan)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    /*
     // user가 삭제되면 함께 삭제
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;*/
 
-    private Long postId;
     private Long userId;
 
     @Setter
@@ -41,9 +39,9 @@ public class Comment extends Timestamped{
     }
 
     // 임시 생성자
-    public Comment(Long userId, Long postId, String content) {
+    public Comment(Long userId, Post post, String content) {
         this.userId = userId;
-        this.postId = postId;
+        this.post = post;
         this.content = content;
     }
 }

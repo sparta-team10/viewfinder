@@ -23,12 +23,9 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
-    // 임시 user
-    private final Long userId = 10L;
-
     // 댓글 생성
     @PostMapping("/")
-    public ResponseEntity<CommentResponseDto> createComment(@RequestParam Long postId, @RequestBody CommentRequestDto commentRequestDto) {
+    public ResponseEntity<CommentResponseDto> createComment(@RequestParam Long postId, @RequestParam Long userId, @RequestBody CommentRequestDto commentRequestDto) {
         CommentResponseDto res = commentService.createComment(userId, postId, commentRequestDto);
         return ResponseEntity.ok(res);
     }
@@ -42,14 +39,14 @@ public class CommentController {
 
     // 댓글 수정
     @PatchMapping("/{id}")
-    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto) throws IllegalAccessException {
+    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long id, @RequestParam Long userId, @RequestBody CommentRequestDto commentRequestDto) throws IllegalAccessException {
         CommentResponseDto res = commentService.updateComment(userId, id, commentRequestDto);
         return ResponseEntity.ok(res);
     }
 
     // 댓글 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteComment(@PathVariable Long id) throws IllegalAccessException {
+    public ResponseEntity<Boolean> deleteComment(@PathVariable Long id, @RequestParam Long userId) throws IllegalAccessException {
         return ResponseEntity.ok(commentService.deleteComment(userId, id));
     }
 }

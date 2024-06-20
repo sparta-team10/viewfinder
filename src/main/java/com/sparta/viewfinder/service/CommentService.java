@@ -3,6 +3,9 @@ package com.sparta.viewfinder.service;
 import com.sparta.viewfinder.dto.CommentRequestDto;
 import com.sparta.viewfinder.dto.CommentResponseDto;
 import com.sparta.viewfinder.entity.Comment;
+import com.sparta.viewfinder.entity.Post;
+import com.sparta.viewfinder.exception.CommonErrorCode;
+import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.repository.CommentRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +24,12 @@ public class CommentService {
     // 댓글 생성, 등록
     public CommentResponseDto createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
 
-        /* Post 기능 완료시
-        Post post = postRepository.findById(postId).orElse(null);
-        if (post == null) {
-            return null; // 혹은 exception 처리
-        }
-        */
+        // 게시물을 찾을 수 없을 때
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND)
+                );
 
-        Comment comment = new Comment(userId, postId, commentRequestDto.getContent());
+        Comment comment = new Comment(userId, post, commentRequestDto.getContent());
         commentRepository.save(comment);
 
         return new CommentResponseDto(comment);
