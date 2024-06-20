@@ -28,8 +28,7 @@ class ViewfinderApplicationTests {
         User user = new User();
         userRepository.save(user);
 
-        Post post = new Post();
-        post.setUser(user);
+        Post post = new Post(user, "글 내용입니다.");
         postRepository.save(post);
     }
 
