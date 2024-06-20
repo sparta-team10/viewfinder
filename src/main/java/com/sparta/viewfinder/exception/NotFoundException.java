@@ -3,8 +3,8 @@ package com.sparta.viewfinder.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public class NotFoundException extends RuntimeException {
     private final ErrorCode errorCode;
 }
