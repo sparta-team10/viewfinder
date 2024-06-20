@@ -29,7 +29,6 @@ public class UserService {
         User saveUser = new User(request);
         Optional<User> user = userRepository.findByUsername(request.getUsername());
 
-
         if(user.isPresent()){
             throw new DuplicatedException(UserErrorCode.DUPLICATED_USER);
         }
