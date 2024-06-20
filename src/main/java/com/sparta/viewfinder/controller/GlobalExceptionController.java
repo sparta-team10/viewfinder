@@ -74,6 +74,11 @@ public class GlobalExceptionController extends ResponseEntityExceptionHandler {
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, Exception e) {
         int value = errorCode.getHttpStatus().value();
         String message = e.getMessage();
+
+        if (e instanceof MethodArgumentNotValidException) {
+            message = "Method Argument Not Valid Exception";
+        }
+
         HttpStatus httpStatus = errorCode.getHttpStatus();
 
         if (message == null) {
