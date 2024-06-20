@@ -2,9 +2,7 @@ package com.sparta.viewfinder.service;
 
 
 import com.sparta.viewfinder.dto.UserRequestDto;
-
-import com.sparta.viewfinder.entity.Profile;
-
+import com.sparta.viewfinder.dto.UserResponseDto;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.exception.UserErrorCode;
@@ -25,8 +23,7 @@ public class UserService {
     private Long id;
 
 
-    public User createUser(UserRequestDto request) {
-
+    public UserResponseDto createUser(UserRequestDto request) {
         User saveUser = new User(request);
         Optional<User> user = userRepository.findByUsername(request.getUsername());
 
@@ -34,7 +31,6 @@ public class UserService {
             throw new RuntimeException("사용중인 이름입니다");
         }
         userRepository.save(saveUser);
-
 
         return new UserResponseDto(saveUser);
     }
