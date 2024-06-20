@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -31,48 +32,43 @@ public class PostService {
         return new PostResponseDto(post);
     }
 
-    @Transactional
-    public PostResponseDto updatePost(Long id, Long userId, PostRequestDto requestDto) {
-        if (!postRepository.existsById(id)) {
-            throw new IllegalArgumentException("Not found post");
-        }
-
-        Post post = postRepository.findById(id).get();
-
-        // 본인 작성 댓글만 수정 가능
-        if (post.getUser().getId() != userId) {
-            throw new NotFoundException(CommonErrorCode.INVALID_PARAMETER);
-        }
-
-        post.setContent(requestDto.getContent());
-
-        return new PostResponseDto(post);
-    }
-
-    @Transactional
-    public void deletePost(Long Id, Long userId) {
-        if (!postRepository.existsById(Id)) {
-            throw new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND);
-        }
-
-        Post post = postRepository.findById(Id).get();
-
-        // 본인 작성 댓글만 삭제 가능
-        if (post.getUser().getId() != userId) {
-            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
-        }
-        postRepository.delete(post);
-        //return true;
-    }
-
     public PostResponseDto readPost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
         return new PostResponseDto(post);
     }
 
     public List<PostResponseDto> readAllPost() {
-        List<PostResponseDto> postResponseDtoList = postRepository.findAll()
+        return postRepository.findAll()
                 .stream().map(PostResponseDto::new).toList();
-        return postResponseDtoList;
     }
+
+    @Transactional
+    public PostResponseDto updatePost(Long id, Long userId, PostRequestDto requestDto) {
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Not found post")
+        );
+
+        // 본인 작성 댓글만 수정 가능
+        if (!Objects.equals(post.getUser().getId(), userId)) {
+            throw new NotFoundException(CommonErrorCode.INVALID_PARAMETER);
+        }
+
+        post.update(requestDto);
+
+        return new PostResponseDto(post);
+    }
+
+    @Transactional
+    public void deletePost(Long id, Long userId) {
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND)
+        );
+
+        // 본인 작성 댓글만 삭제 가능
+        if (!Objects.equals(post.getUser().getId(), userId)) {
+            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
+        }
+        postRepository.delete(post);
+    }
+
 }
