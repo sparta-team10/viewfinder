@@ -8,6 +8,9 @@ public class ProfileUpdateResponseDto {
     private final String headline;
     private final String phoneNumber;
     private final String sns;
+//    private String createAt;
+//    private String modifiedAt;
+
 
     public ProfileUpdateResponseDto(Profile profile) {
         this.headline = profile.getHeadline();

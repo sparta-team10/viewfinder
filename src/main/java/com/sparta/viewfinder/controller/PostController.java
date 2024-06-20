@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
     private final PostService service;
+    private static final String DELTE_POST = "게시글이 삭제 되었습니다.";
 
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(@RequestParam Long id, @RequestBody PostRequestDto postRequestDto) {
@@ -42,15 +43,20 @@ public class PostController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestParam Long userId, @RequestBody PostRequestDto postRequestDto) { //인증 인가 구현시 userId 변경
+    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id,
+                                                      @RequestParam Long userId,
+                                                      @RequestBody PostRequestDto postRequestDto)
+    { //인증 인가 구현시 userId 변경// -> 토큰으로 가져오면 쉽게 해결
         PostResponseDto postResponseDto = service.updatePost(id, userId, postRequestDto);
         return ResponseEntity.ok(postResponseDto);
     }
 
-    // 댓글 삭제
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable Long id, @RequestParam Long userId) { //인증 인가 구현시 userId 변경
+    public ResponseEntity<String> deletePost(@PathVariable Long id,
+                                             @RequestParam Long userId) {
+        //인증 인가 구현시 userId 변경 -> 토큰으로 가져오면 쉽게 해결
         service.deletePost(id, userId);
-        return ResponseEntity.ok("Success deletion");
+        return ResponseEntity.ok().body(DELTE_POST);
     }
 }

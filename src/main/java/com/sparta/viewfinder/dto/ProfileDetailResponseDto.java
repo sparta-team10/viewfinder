@@ -7,15 +7,15 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ProfileDetailResponseDto {
-    private Long id;
     private String name;
     private String headline;
     private String email;
     private String phoneNumber;
     private String sns;
+    //    private String createAt;
+
 
     public ProfileDetailResponseDto(Profile profile) {
-        this.id = profile.getId();
         this.name = profile.getUser().getName();
         this.headline = profile.getHeadline();
         this.email = profile.getUser().getEmail();

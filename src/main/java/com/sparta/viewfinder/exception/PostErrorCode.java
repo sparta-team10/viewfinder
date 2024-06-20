@@ -11,9 +11,6 @@ public enum PostErrorCode implements ErrorCode {
             "게시글을 찾을 수 없습니다.");
 
 
-
-
-
     private final HttpStatus status;
     private final String message;
 
