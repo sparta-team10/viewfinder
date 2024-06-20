@@ -3,9 +3,11 @@ package com.sparta.viewfinder.service;
 
 import com.sparta.viewfinder.dto.UserRequestDto;
 
+import com.sparta.viewfinder.dto.UserResponseDto;
 import com.sparta.viewfinder.entity.Profile;
 
 import com.sparta.viewfinder.entity.User;
+import com.sparta.viewfinder.exception.DuplicatedException;
 import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.exception.UserErrorCode;
 import org.springframework.stereotype.Service;
@@ -25,16 +27,16 @@ public class UserService {
     private Long id;
 
 
-    public User createUser(UserRequestDto request) {
+    public UserResponseDto createUser(UserRequestDto request) {
 
         User saveUser = new User(request);
         Optional<User> user = userRepository.findByUsername(request.getUsername());
 
-        if( user.isPresent() ){
-            throw new RuntimeException("사용중인 이름입니다");
+
+        if(user.isPresent()){
+            throw new DuplicatedException(UserErrorCode.DUPLICATED_USER);
         }
         userRepository.save(saveUser);
-
 
         return new UserResponseDto(saveUser);
     }
