@@ -51,6 +51,16 @@ public class PostController {
         return ResponseEntity.ok(postResponseDto);
     }
 
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<PostResponseDto> updatePost2(
+//            @PathVariable Long id,
+//            @RequestParam Long userId,
+//            @RequestBody PostRequestDto postRequestDto)
+//    { //인증 인가 구현시 userId 변경// -> 토큰으로 가져오면 쉽게 해결
+//        PostResponseDto postResponseDto = service.updatePost(id, userId, postRequestDto);
+//        return ResponseEntity.ok(postResponseDto);
+//    }
+    
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable Long id,
