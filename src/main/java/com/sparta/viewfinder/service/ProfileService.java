@@ -29,7 +29,8 @@ public class ProfileService {
     }
 
     public ProfileDetailResponseDto getProfileDetail(Long profileId) {
-        Profile profile = profileRepository.findById(profileId).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        Profile profile = profileRepository.findById(profileId).orElseThrow(
+                ()-> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
         return new ProfileDetailResponseDto(profile);
     }
 
@@ -39,7 +40,7 @@ public class ProfileService {
                 ()-> new NotFoundException(UserErrorCode.USER_NOT_FOUND)
         );
         Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(
-                ()-> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND)
+                ()-> new NotFoundException(UserErrorCode.USER_NOT_MATCH)
         );
 
         profile.update(profileUpdateRequestDto);
