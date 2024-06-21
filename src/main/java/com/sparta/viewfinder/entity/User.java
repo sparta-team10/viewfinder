@@ -44,7 +44,7 @@ public class User extends Timestamped{
         this.name = name;
         this.email = email;
         this.status = UserStatusEnum.USER;
-        this.userRole = UserRoleEnum.USER;
+        this.userRole = UserRoleEnum.USER; // -> 회원가입할 때 어드민 or 일반 유저로 선택되는걸로 바꿔야함
         this.profile = new Profile(this);
     }
 
