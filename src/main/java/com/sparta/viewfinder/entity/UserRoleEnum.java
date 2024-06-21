@@ -1,8 +1,8 @@
 package com.sparta.viewfinder.entity;
 
 public enum UserRoleEnum {
-    ADMIN(UserRole.ADMIN);
-//    USER(UserRole.NON_ADMIN);
+    ADMIN(UserRole.ADMIN),
+    USER(UserRole.NON_ADMIN);
 
     private final String role;
 
