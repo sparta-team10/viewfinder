@@ -1,6 +1,7 @@
 package com.sparta.viewfinder.jwt;
 
 import com.sparta.viewfinder.entity.User;
+import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
 import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.exception.UserErrorCode;
@@ -37,14 +38,17 @@ public class JwtTokenHelper {
   public static final String AUTHORIZATION_HEADER = "Authorization";
   // Refresh token
   public static final String REFRESH_TOKEN_HEADER = "Refresh_token";
-  // 사용자 권한 값의 KEY
+  // 회원 상태의 값 KEY
   public static final String AUTHORIZATION_KEY = "status";
+  // 사용자 권한 값의 KEY
+  public static final String ADMIN_KET = "role";
   // Token 식별자
   public static final String BEARER_PREFIX = "Bearer ";
   // 토큰 만료시간
   private final long TOKEN_TIME = 30 * 60 * 1000L; // 30분
 
   private final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L;
+  // ADMIN USER
 
   private final UserRepository userRepository;
 
