@@ -10,6 +10,7 @@ import com.sparta.viewfinder.exception.UserErrorCode;
 import com.sparta.viewfinder.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,20 +21,26 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private Long id;
 
 
     public UserResponseDto createUser(UserRequestDto request) {
+        String password = passwordEncoder.encode(request.getPassword());
 
-        User saveUser = new User(request);
-        Optional<User> user = userRepository.findByUsername(request.getUsername());
-
-        if(user.isPresent()){
+        if(userRepository.findByUsername(request.getUsername()).isPresent()){
             throw new DuplicatedException(UserErrorCode.DUPLICATED_USER);
         }
-        userRepository.save(saveUser);
+        User user = new User(
+                request.getUsername(),
+                password,
+                request.getName(),
+                request.getEmail()
+        );
 
-        return new UserResponseDto(saveUser);
+        userRepository.save(user);
+
+        return new UserResponseDto(user);
     }
 
     public boolean login(LoginRequestDto requestDto) {

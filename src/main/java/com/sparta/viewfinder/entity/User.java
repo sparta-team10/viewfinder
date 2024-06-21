@@ -38,12 +38,11 @@ public class User extends Timestamped{
     private Profile profile;
 
 
-
-    public User(UserRequestDto requestDto) {
-        this.username = requestDto.getUsername();
-        this.password = requestDto.getPassword();
-        this.name = requestDto.getName();
-        this.email = requestDto.getEmail();
+    public User(String username, String password, String name, String email) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.email = email;
         this.status = UserStatusEnum.USER;
         this.userRole = UserRoleEnum.USER;
         this.profile = new Profile(this);
