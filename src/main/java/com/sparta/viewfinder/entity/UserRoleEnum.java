@@ -1,22 +1,22 @@
 package com.sparta.viewfinder.entity;
 
 public enum UserRoleEnum {
-    ADMIN(UserRole.ADMIN),
-    USER(UserRole.NON_ADMIN);
+    ADMIN(Authority.ADMIN),
+    USER(Authority.USER);
 
-    private final String role;
+    private final String authority;
 
-    UserRoleEnum(String role) {
-        this.role = role;
+    UserRoleEnum(String authority) {
+        this.authority = authority;
     }
 
-    public String getRole(){
-        return this.role;
+    public String getAuthority(){
+        return this.authority;
     }
 
 
-    public static class UserRole{
+    public static class Authority{
         public static final String ADMIN = "ADMIN";
-        public static final String NON_ADMIN = "NON_ADMIN";
+        public static final String USER = "USER";
     }
 }

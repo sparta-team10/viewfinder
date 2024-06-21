@@ -38,10 +38,10 @@ public class JwtTokenHelper {
   public static final String AUTHORIZATION_HEADER = "Authorization";
   // Refresh token
   public static final String REFRESH_TOKEN_HEADER = "Refresh_token";
-  // 회원 상태의 값 KEY
-  public static final String AUTHORIZATION_KEY = "status";
   // 사용자 권한 값의 KEY
-  public static final String ADMIN_KET = "role";
+  public static final String AUTHORIZATION_KEY = "auth";
+  // 회원 상태의 값 KEY
+  public static final String STATUS_KET = "status";
   // Token 식별자
   public static final String BEARER_PREFIX = "Bearer ";
   // 토큰 만료시간
@@ -64,13 +64,14 @@ public class JwtTokenHelper {
   }
 
   // 토큰 생성
-  public String createToken(String username, UserStatusEnum status) {
+  public String createToken(String username, UserStatusEnum status, UserRoleEnum authority) {
     Date date = new Date();
 
     return BEARER_PREFIX +
         Jwts.builder()
             .setSubject(username) // 사용자 식별자값(ID)
-            .claim(AUTHORIZATION_KEY, status) // 사용자 권한
+            .claim(AUTHORIZATION_KEY, authority) // 사용자 권한
+            .claim(STATUS_KET, status) // 회원 상태
             .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
             .setIssuedAt(date) // 발급일
             .signWith(key, signatureAlgorithm) // 암호화 알고리즘
