@@ -1,6 +1,7 @@
 package com.sparta.viewfinder.security;
 
 import com.sparta.viewfinder.dto.LoginRequestDto;
+import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
 import com.sparta.viewfinder.exception.CommonErrorCode;
 import com.sparta.viewfinder.exception.NotFoundException;
@@ -56,11 +57,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     String username = ((UserDetailsImpl)authResult.getPrincipal()).getUsername();
     UserStatusEnum status = ((UserDetailsImpl)authResult.getPrincipal()).getUser().getStatus();
+    UserRoleEnum role = ((UserDetailsImpl)authResult.getPrincipal()).getUser().getUserRole();
 
     log.info("username: {}", username);
     log.info("status: {}", status);
-
-    String accessToken = jwtTokenHelper.createToken(username, status);
+    log.info("role: {}", role);
+    
+    String accessToken = jwtTokenHelper.createToken(username, status, role);
     String refreshToken = jwtTokenHelper.createRefreshToken();
     response.addHeader(JwtTokenHelper.AUTHORIZATION_HEADER, accessToken);
     response.addHeader(JwtTokenHelper.REFRESH_TOKEN_HEADER, refreshToken);
