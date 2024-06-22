@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 @Getter
 
+//이름 변경 signUpRequestDto
 public class UserRequestDto {
     @Size(min=4, max=10)
     @Pattern(regexp = "^[a-z0-9]+$", message = "영어 소문자와 숫자만 입력 가능합니다.")
@@ -17,5 +18,4 @@ public class UserRequestDto {
     private String name;
 
     private String email;
-
 }

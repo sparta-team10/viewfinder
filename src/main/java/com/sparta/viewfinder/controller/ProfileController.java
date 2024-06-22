@@ -15,9 +15,6 @@ import java.util.List;
 public class ProfileController {
     private final ProfileService profileService;
 
-
-    //return을 바로 body로 하면 디버그 어려움이 발생하는데 목록 조회 같은경우에는 코드를 어떻게 고쳐야하는지
-
     @GetMapping
     public ResponseEntity<List<ProfileAllResponseDto>> getAllProfiles() {
         List<ProfileAllResponseDto> allProfiles = profileService.getAllProfiles();

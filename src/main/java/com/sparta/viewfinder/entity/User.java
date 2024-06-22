@@ -48,6 +48,13 @@ public class User extends Timestamped{
         this.profile = new Profile(this);
     }
 
+    public void withDraw() {
+        this.status = UserStatusEnum.NON_USER;
+        this.statusUpdate = this.getModifiedAt();
+        this.refreshToken = null;
+    }
+
+
     public boolean logout(){
         refreshToken = null;
         return refreshToken == null ? true : false;
