@@ -19,7 +19,7 @@ public class UserController {
 
     private final UserService userService;
     private static final String SUCCESS_LOGIN = "로그인 성공";
-    private static final String FAIL_LOGIN = "로그인 실패";
+    private static final String SUCCESS_LOGOUT = "로그아웃 성공";
     private static final String SUCCESS_SIGN_UP = "회원가입에 성공하였습니다.";
 
 
@@ -43,6 +43,6 @@ public class UserController {
     @PutMapping("/logout/{id}")
     public ResponseEntity<String> logout(@PathVariable Long id) {
         userService.logout(id);
-        return ResponseEntity.ok().body(FAIL_LOGIN);
+        return ResponseEntity.ok().body(SUCCESS_LOGOUT);
     }
 }
