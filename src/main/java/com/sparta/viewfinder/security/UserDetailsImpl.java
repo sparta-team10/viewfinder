@@ -1,6 +1,7 @@
 package com.sparta.viewfinder.security;
 
 import com.sparta.viewfinder.entity.User;
+import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,12 +34,19 @@ public class UserDetailsImpl implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    UserStatusEnum role = user.getStatus();
-    String authority = role.getStatus();
+    UserStatusEnum statusEnum = user.getStatus();
+    String status = statusEnum.getStatus();
+// 없어도 되는 건지
+//    UserRoleEnum userRoleEnum = user.getUserRole();
+//    String role = userRoleEnum.getAuthority();
 
-    SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
+    SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(status);
+//    SimpleGrantedAuthority simpleGrantedAuthority1 = new SimpleGrantedAuthority(role);
+
     Collection<GrantedAuthority> authorities = new ArrayList<>();
+
     authorities.add(simpleGrantedAuthority);
+//    authorities.add(simpleGrantedAuthority1);
 
     return authorities;
   }
