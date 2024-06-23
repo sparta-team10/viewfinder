@@ -32,6 +32,7 @@ public class UserDetailsImpl implements UserDetails {
     return user.getUsername();
   }
 
+  //사용자 권한 정하는 메서드
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     UserStatusEnum statusEnum = user.getStatus();
