@@ -37,7 +37,6 @@ public class User extends Timestamped{
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private Profile profile;
 
-
     public User(String username, String password, String name, String email) {
         this.username = username;
         this.password = password;

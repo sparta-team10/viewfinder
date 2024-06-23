@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 @Getter
-@Email
 //이름 변경 signUpRequestDto
 public class UserRequestDto {
     @Size(min=4, max=10)
@@ -18,5 +17,6 @@ public class UserRequestDto {
 
     private String name;
 
+    @Email
     private String email;
 }

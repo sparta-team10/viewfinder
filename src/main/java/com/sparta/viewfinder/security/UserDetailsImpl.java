@@ -6,6 +6,7 @@ import com.sparta.viewfinder.entity.UserStatusEnum;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
