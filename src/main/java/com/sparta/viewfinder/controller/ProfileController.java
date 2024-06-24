@@ -1,17 +1,19 @@
 package com.sparta.viewfinder.controller;
 
 import com.sparta.viewfinder.dto.*;
+import com.sparta.viewfinder.security.UserDetailsImpl;
 import com.sparta.viewfinder.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/profile")
 public class ProfileController {
     private final ProfileService profileService;
 
@@ -27,11 +29,11 @@ public class ProfileController {
         return ResponseEntity.ok().body(profileDetail);
     }
 
-    @PatchMapping("/{user_id}") // Jwt 구현되면 {user_id} 제거할 예정
+    @PatchMapping
     public ResponseEntity<ProfileUpdateResponseDto> updateProfile(
-            @PathVariable("user_id") Long userId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody ProfileUpdateRequestDto requestDto) {
-        ProfileUpdateResponseDto profileUpdateResponseDto = profileService.updateProfile(userId, requestDto);
+        ProfileUpdateResponseDto profileUpdateResponseDto = profileService.updateProfile(userDetails, requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(profileUpdateResponseDto);
     }
 }
