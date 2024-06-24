@@ -24,14 +24,15 @@ public abstract class Timestamped {
     @Temporal(TemporalType.TIMESTAMP)
     private String modifiedAt;
 
+    @PrePersist
     public void onPrePersist() {
-        createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/mm/dd HH:mm:ss"));
+        createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
         this.modifiedAt = this.createdAt;
     }
 
-    @PrePersist
+    @PreUpdate
     public void onPreUpdate() {
-        modifiedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/mm/dd HH:mm:ss"));
+        modifiedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
     }
 
 

@@ -78,7 +78,7 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public String deleteComment(Long commentId, Long userId) {
+    public void deleteComment(Long commentId, Long userId) {
         // 해당 댓글이 없는경우 -> Comment에 관한 ErrorCode 클래스 만들고 사용
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NotFoundException(CommentErrorCode.COMMENT_NOT_FOUND));
@@ -88,7 +88,6 @@ public class CommentService {
             throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
         commentRepository.delete(comment);
-        return "성공했습니다.";
     }
 
 }
