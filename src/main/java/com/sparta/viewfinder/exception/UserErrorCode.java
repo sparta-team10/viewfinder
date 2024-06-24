@@ -20,7 +20,13 @@ public enum UserErrorCode implements ErrorCode {
     WITHDRAW_USER(HttpStatus.NOT_FOUND,
         "탈퇴한 회원입니다."),
     REFRESH_TOKEN_MISMATCH(HttpStatus.NOT_FOUND,
-        "REFRESH_TOKEN 값이 일치 하지 않습니다.");
+        "REFRESH_TOKEN 값이 일치 하지 않습니다."),
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST,
+            "비밀번호가 일치하지 않습니다."),
+    DUPLICATED_PASSWORD(HttpStatus.BAD_REQUEST,
+            "현재 비밀번호와 같은 비밀번호로 수정할 수 없습니다."),
+    DUPLICATED_PASSWORD_THREE_TIMES(HttpStatus.BAD_REQUEST,
+            "새 비밀번호는 최근 이용한 비밀번호와 다르게 설정해야합니다.");
 
     private final HttpStatus status;
     private final String message;

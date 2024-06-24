@@ -2,6 +2,7 @@ package com.sparta.viewfinder.controller;
 
 import com.sparta.viewfinder.dto.LoginRequestDto;
 import com.sparta.viewfinder.dto.UserRequestDto;
+import com.sparta.viewfinder.dto.UserUpdateRequestDto;
 import com.sparta.viewfinder.dto.WithDrawUserRequestDto;
 import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
@@ -13,15 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping
 @RestController
@@ -36,6 +29,7 @@ public class UserController {
     private static final String SUCCESS_SIGN_UP = "회원가입에 성공하였습니다.";
     private static final String WITHDRAW_SUCCESS_MESSAGE = "회원탈퇴에 성공했습니다.";
     private static final String REFRESH_TOKEN_SUCCESS_MESSAGE = "토큰 재발급 성공했습니다.";
+    private static final String SUCCESS_UPDATE_PASSWORD = "비밀번호 변경이 정상적으로 처리되었습니다.";
 
     // 회원가입
     @PostMapping("/sign-up") // http://localhost:8080/sign-up POST
@@ -89,4 +83,13 @@ public class UserController {
             .header(JwtTokenHelper.AUTHORIZATION_HEADER, newAccessToken)
             .body(REFRESH_TOKEN_SUCCESS_MESSAGE + newAccessToken);
     }
+
+    @PatchMapping("/user")
+    public ResponseEntity<String> updatePassword(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody UserUpdateRequestDto requestDto) {
+        userService.updatePassword(userDetails, requestDto);
+        return ResponseEntity.ok().body(SUCCESS_UPDATE_PASSWORD);
+    }
+
 }
