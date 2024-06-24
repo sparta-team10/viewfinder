@@ -1,7 +1,7 @@
 package com.sparta.viewfinder.controller;
 
 import com.sparta.viewfinder.dto.LoginRequestDto;
-import com.sparta.viewfinder.dto.UserRequestDto;
+import com.sparta.viewfinder.dto.SignUpRequestDto;
 import com.sparta.viewfinder.dto.UserUpdateRequestDto;
 import com.sparta.viewfinder.dto.WithDrawUserRequestDto;
 import com.sparta.viewfinder.entity.UserRoleEnum;
@@ -33,7 +33,7 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/sign-up") // http://localhost:8080/sign-up POST
-    public ResponseEntity<String> signUp(@Valid @RequestBody UserRequestDto requestDto) { // Valid를 달아야 검증 작동
+    public ResponseEntity<String> signUp(@Valid @RequestBody SignUpRequestDto requestDto) { // Valid를 달아야 검증 작동
         userService.signUp(requestDto);
         return ResponseEntity.ok().body(SUCCESS_SIGN_UP);
     }

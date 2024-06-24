@@ -1,8 +1,8 @@
 package com.sparta.viewfinder.service;
 
 import com.sparta.viewfinder.dto.LoginRequestDto;
-import com.sparta.viewfinder.dto.UserRequestDto;
-import com.sparta.viewfinder.dto.UserResponseDto;
+import com.sparta.viewfinder.dto.SignUpRequestDto;
+import com.sparta.viewfinder.dto.SignUpResponseDto;
 import com.sparta.viewfinder.dto.UserUpdateRequestDto;
 import com.sparta.viewfinder.entity.PasswordHistory;
 import com.sparta.viewfinder.entity.User;
@@ -29,7 +29,7 @@ public class UserService {
   private Long id;
 
 
-  public UserResponseDto signUp(UserRequestDto requestDto) {
+  public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
     String password = passwordEncoder.encode(requestDto.getPassword());
 
     if (userRepository.findByUsername(requestDto.getUsername()).isPresent()) {
@@ -42,7 +42,7 @@ public class UserService {
         requestDto.getEmail()
     );
     userRepository.save(user);
-    return new UserResponseDto(user);
+    return new SignUpResponseDto(user);
   }
 
   // 회원 탈퇴
