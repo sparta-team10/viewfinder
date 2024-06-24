@@ -40,21 +40,12 @@ public class UserController {
 
     @DeleteMapping("/withdraw")
     public ResponseEntity<String> withDraw(
-        @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @Valid @RequestBody WithDrawUserRequestDto requestDto) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody WithDrawUserRequestDto requestDto) {
 
         userService.withDraw(userDetails.getUser().getId(), requestDto.getPassword());
         return ResponseEntity.ok().body(WITHDRAW_SUCCESS_MESSAGE);
     }
-
-
-    // 로그인 질문할 것
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto requestDto) {
-        userService.login(requestDto);
-        return ResponseEntity.ok().body(SUCCESS_LOGIN);
-    }
-
 
     @PostMapping("/log-out")
     public ResponseEntity<String> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -65,8 +56,8 @@ public class UserController {
     // 토큰 재발급
     @GetMapping("/refresh")
     public ResponseEntity<String> refresh(
-        @RequestHeader(JwtTokenHelper.AUTHORIZATION_HEADER) String accessToken,
-        @RequestHeader(JwtTokenHelper.REFRESH_TOKEN_HEADER) String refreshToken) {
+            @RequestHeader(JwtTokenHelper.AUTHORIZATION_HEADER) String accessToken,
+            @RequestHeader(JwtTokenHelper.REFRESH_TOKEN_HEADER) String refreshToken) {
 
         Claims claims = jwtTokenHelper.getExpiredAccessToken(accessToken);
         String username = claims.getSubject();

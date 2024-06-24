@@ -26,8 +26,10 @@ public class PostController {
     private static final String DELTE_POST = "게시글이 삭제 되었습니다.";
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto postRequestDto) {
-        PostResponseDto postResponseDto = service.createPost(userDetails, postRequestDto);
+    public ResponseEntity<PostResponseDto> createPost(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody PostRequestDto requestDto) {
+        PostResponseDto postResponseDto = service.createPost(userDetails, requestDto);
         return ResponseEntity.ok(postResponseDto);
     }
 
@@ -44,29 +46,18 @@ public class PostController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id,
-                                                      @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                      @RequestBody PostRequestDto postRequestDto)
-    { //인증 인가 구현시 userId 변경// -> 토큰으로 가져오면 쉽게 해결
-        PostResponseDto postResponseDto = service.updatePost(id, userDetails, postRequestDto);
+    public ResponseEntity<PostResponseDto> updatePost(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody PostRequestDto requestDto) {
+        PostResponseDto postResponseDto = service.updatePost(id, userDetails, requestDto);
         return ResponseEntity.ok(postResponseDto);
     }
 
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<PostResponseDto> updatePost2(
-//            @PathVariable Long id,
-//            @RequestParam Long userId,
-//            @RequestBody PostRequestDto postRequestDto)
-//    { //인증 인가 구현시 userId 변경// -> 토큰으로 가져오면 쉽게 해결
-//        PostResponseDto postResponseDto = service.updatePost(id, userId, postRequestDto);
-//        return ResponseEntity.ok(postResponseDto);
-//    }
-    
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable Long id,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        //인증 인가 구현시 userId 변경 -> 토큰으로 가져오면 쉽게 해결
+    public ResponseEntity<String> deletePost(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         service.deletePost(id, userDetails);
         return ResponseEntity.ok().body(DELTE_POST);
     }

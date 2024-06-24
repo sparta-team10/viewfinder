@@ -28,8 +28,10 @@ public class ProfileController {
     }
 
     @PatchMapping("/{user_id}") // Jwt 구현되면 {user_id} 제거할 예정
-    public ResponseEntity<ProfileUpdateResponseDto> updateProfile(@PathVariable("user_id") Long userId, @RequestBody ProfileUpdateRequestDto profileUpdateRequestDto) {
-        ProfileUpdateResponseDto profileUpdateResponseDto = profileService.updateProfile(userId, profileUpdateRequestDto);
+    public ResponseEntity<ProfileUpdateResponseDto> updateProfile(
+            @PathVariable("user_id") Long userId,
+            @RequestBody ProfileUpdateRequestDto requestDto) {
+        ProfileUpdateResponseDto profileUpdateResponseDto = profileService.updateProfile(userId, requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(profileUpdateResponseDto);
     }
 }

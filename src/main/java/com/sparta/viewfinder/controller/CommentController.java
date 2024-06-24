@@ -23,11 +23,12 @@ public class CommentController {
 
   // 댓글 생성
   @PostMapping
-  public ResponseEntity<CommentResponseDto> createComment(@RequestParam Long postId,
-                                                          @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                          @RequestBody CommentRequestDto commentRequestDto) {
+  public ResponseEntity<CommentResponseDto> createComment(
+        @RequestParam Long postId,
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestBody CommentRequestDto requestDto) {
     Long userId = getUserIdByUserDetails(userDetails);
-    CommentResponseDto res = commentService.createComment(userId, postId, commentRequestDto);
+    CommentResponseDto res = commentService.createComment(userId, postId, requestDto);
     return ResponseEntity.ok(res);
   }
 
@@ -44,18 +45,20 @@ public class CommentController {
 
   // 댓글 수정
   @PatchMapping("/{id}")
-  public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long id,
-                                                          @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                          @RequestBody CommentRequestDto commentRequestDto) {
+  public ResponseEntity<CommentResponseDto> updateComment(
+        @PathVariable Long id,
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestBody CommentRequestDto requestDto) {
     Long userId = getUserIdByUserDetails(userDetails);
-    CommentResponseDto res = commentService.updateComment(userId, id, commentRequestDto);
+    CommentResponseDto res = commentService.updateComment(userId, id, requestDto);
     return ResponseEntity.ok(res);
   }
 
   // 댓글 삭제
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteComment(@PathVariable Long id,
-                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  public ResponseEntity<String> deleteComment(
+        @PathVariable Long id,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
     Long userId = getUserIdByUserDetails(userDetails);
     commentService.deleteComment(id, userId);
     return ResponseEntity.ok().body(DELETE_COMMENT_SUCCESS_MESSAGE);
@@ -65,5 +68,4 @@ public class CommentController {
   private Long getUserIdByUserDetails(UserDetailsImpl userDetails) {
     return userDetails.getUser().getId();
   }
-
 }
