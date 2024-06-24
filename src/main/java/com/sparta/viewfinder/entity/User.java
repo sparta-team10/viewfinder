@@ -1,6 +1,5 @@
 package com.sparta.viewfinder.entity;
 
-import com.sparta.viewfinder.dto.UserRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

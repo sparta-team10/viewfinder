@@ -6,13 +6,13 @@ import lombok.Getter;
 
 //이름 변경 signUpResponseDto
 @Getter
-public class UserResponseDto {
+public class SignUpResponseDto {
     private String username;
     private String name;
     private String email;
 //    private String creatAt;
 
-    public UserResponseDto(User user) {
+    public SignUpResponseDto(User user) {
         this.username = user.getUsername();
         this.name = user.getName();
         this.email = user.getEmail();
