@@ -2,9 +2,12 @@ package com.sparta.viewfinder.controller;
 
 import com.sparta.viewfinder.dto.PostRequestDto;
 import com.sparta.viewfinder.dto.PostResponseDto;
+import com.sparta.viewfinder.security.UserDetailsImpl;
 import com.sparta.viewfinder.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,8 +28,8 @@ public class PostController {
     private static final String DELTE_POST = "게시글이 삭제 되었습니다.";
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@RequestParam Long id, @RequestBody PostRequestDto postRequestDto) {
-        PostResponseDto postResponseDto = service.createPost(id, postRequestDto);
+    public ResponseEntity<PostResponseDto> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDto postRequestDto) {
+        PostResponseDto postResponseDto = service.createPost(userDetails, postRequestDto);
         return ResponseEntity.ok(postResponseDto);
     }
 
@@ -44,10 +47,10 @@ public class PostController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id,
-                                                      @RequestParam Long userId,
-                                                      @RequestBody PostRequestDto postRequestDto)
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                      @Valid @RequestBody PostRequestDto postRequestDto)
     { //인증 인가 구현시 userId 변경// -> 토큰으로 가져오면 쉽게 해결
-        PostResponseDto postResponseDto = service.updatePost(id, userId, postRequestDto);
+        PostResponseDto postResponseDto = service.updatePost(id, userDetails, postRequestDto);
         return ResponseEntity.ok(postResponseDto);
     }
 
@@ -64,9 +67,9 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable Long id,
-                                             @RequestParam Long userId) {
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         //인증 인가 구현시 userId 변경 -> 토큰으로 가져오면 쉽게 해결
-        service.deletePost(id, userId);
+        service.deletePost(id, userDetails);
         return ResponseEntity.ok().body(DELTE_POST);
     }
 }
