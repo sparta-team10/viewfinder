@@ -4,15 +4,22 @@ import com.sparta.viewfinder.dto.PostRequestDto;
 import com.sparta.viewfinder.dto.PostResponseDto;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
-import com.sparta.viewfinder.exception.*;
+import com.sparta.viewfinder.exception.CommonErrorCode;
+import com.sparta.viewfinder.exception.MismatchException;
+import com.sparta.viewfinder.exception.NotFoundException;
+import com.sparta.viewfinder.exception.PostErrorCode;
+import com.sparta.viewfinder.exception.UserErrorCode;
 import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
 import com.sparta.viewfinder.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -35,9 +42,17 @@ public class PostService {
         return new PostResponseDto(post);
     }
 
-    public List<PostResponseDto> readAllPost() {
-        return postRepository.findAll()
-                .stream().map(PostResponseDto::new).toList();
+    public Page<PostResponseDto> readAllPost(int page) {
+        // 페이지네이션
+        int PAGE_SIZE = 5;
+        String sortBy = "createdAt";
+        Sort.Direction direction = Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, sort);
+
+        Page<Post> postList = postRepository.findAll(pageable);
+
+        return postList.map(PostResponseDto::new);
     }
 
     @Transactional
