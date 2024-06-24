@@ -27,8 +27,7 @@ public class CommentController {
         @RequestParam Long postId,
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestBody CommentRequestDto requestDto) {
-    Long userId = getUserIdByUserDetails(userDetails);
-    CommentResponseDto res = commentService.createComment(userId, postId, requestDto);
+    CommentResponseDto res = commentService.createComment(userDetails, postId, requestDto);
     return ResponseEntity.ok(res);
   }
 
@@ -49,8 +48,7 @@ public class CommentController {
         @PathVariable Long id,
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestBody CommentRequestDto requestDto) {
-    Long userId = getUserIdByUserDetails(userDetails);
-    CommentResponseDto res = commentService.updateComment(userId, id, requestDto);
+    CommentResponseDto res = commentService.updateComment(userDetails, id, requestDto);
     return ResponseEntity.ok(res);
   }
 
@@ -59,13 +57,7 @@ public class CommentController {
   public ResponseEntity<String> deleteComment(
         @PathVariable Long id,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    Long userId = getUserIdByUserDetails(userDetails);
-    commentService.deleteComment(id, userId);
+    commentService.deleteComment(id, userDetails);
     return ResponseEntity.ok().body(DELETE_COMMENT_SUCCESS_MESSAGE);
-  }
-
-  // 사용자 id get
-  private Long getUserIdByUserDetails(UserDetailsImpl userDetails) {
-    return userDetails.getUser().getId();
   }
 }

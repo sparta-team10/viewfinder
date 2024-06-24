@@ -23,26 +23,27 @@ public class User extends Timestamped{
 
     private String email;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
 
     private String refreshToken;
 
     private String statusUpdate;
 
-    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
     private UserRoleEnum userRole;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private Profile profile;
 
-    public User(String username, String password, String name, String email) {
+    public User(String username, String password, String name, String email, UserRoleEnum userRole) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.status = UserStatusEnum.USER;
-        this.userRole = UserRoleEnum.USER; // -> 회원가입할 때 어드민 or 일반 유저로 선택되는걸로 바꿔야함
+        this.userRole = userRole;
         this.profile = new Profile(this);
     }
 

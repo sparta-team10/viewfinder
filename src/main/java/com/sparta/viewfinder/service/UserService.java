@@ -1,11 +1,11 @@
 package com.sparta.viewfinder.service;
 
-import com.sparta.viewfinder.dto.LoginRequestDto;
 import com.sparta.viewfinder.dto.SignUpRequestDto;
 import com.sparta.viewfinder.dto.SignUpResponseDto;
 import com.sparta.viewfinder.dto.UserUpdateRequestDto;
 import com.sparta.viewfinder.entity.PasswordHistory;
 import com.sparta.viewfinder.entity.User;
+import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.entity.UserStatusEnum;
 import com.sparta.viewfinder.exception.*;
 import com.sparta.viewfinder.repository.PasswordHistoryRepository;
@@ -13,6 +13,7 @@ import com.sparta.viewfinder.repository.UserRepository;
 import com.sparta.viewfinder.security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,20 +27,40 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final PasswordHistoryRepository passwordHistoryRepository;
-  private Long id;
 
+  @Value("${auth.admin_token}")
+  private String ADMIN_TOKEN;
 
   public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
+    String username = requestDto.getUsername();
     String password = passwordEncoder.encode(requestDto.getPassword());
 
-    if (userRepository.findByUsername(requestDto.getUsername()).isPresent()) {
+    // 회원 중복 확인
+    if (userRepository.findByUsername(username).isPresent()) {
       throw new DuplicatedException(UserErrorCode.DUPLICATED_USER);
     }
+
+    // email 중복확인
+    String email = requestDto.getEmail();
+    if(userRepository.findByEmail(email).isPresent()){
+      throw new DuplicatedException(EmailErrorCode.DUPLICATED_EMAIL);
+    }
+
+    // 사용자 ROLE 확인
+    UserRoleEnum role = UserRoleEnum.USER;
+    if(requestDto.isAdmin()) {
+        if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())){
+          throw new MismatchException(UserErrorCode.NOT_ADMIN);
+        }
+        role = UserRoleEnum.ADMIN;
+    }
+
     User user = new User(
-        requestDto.getUsername(),
+        username,
         password,
         requestDto.getName(),
-        requestDto.getEmail()
+        email,
+        role
     );
     userRepository.save(user);
     return new SignUpResponseDto(user);
@@ -56,17 +77,6 @@ public class UserService {
       throw new NotFoundException(UserErrorCode.WITHDRAW_USER);
     }
     user.withDraw();
-  }
-
-
-  public boolean login(LoginRequestDto requestDto) {
-    User findUser = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(
-        () -> new NotFoundException(UserErrorCode.USER_NOT_FOUND)
-    );
-    if (!findUser.getPassword().equals(requestDto.getPassword())) {
-      throw new NotFoundException(UserErrorCode.USER_NOT_FOUND);
-    }
-    return true;
   }
 
   @Transactional
@@ -92,7 +102,7 @@ public class UserService {
 
   @Transactional
   public void updatePassword(UserDetailsImpl userDetails, UserUpdateRequestDto requestDto) {
-    User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(() -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
+    User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(() -> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
 
     if(!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())){
       throw new MismatchException(UserErrorCode.WRONG_PASSWORD);
@@ -114,4 +124,17 @@ public class UserService {
 
     user.updatePassword(encodedPassword);
   }
+
+/*
+  todo : 필터말고 controller로 작동하게끔 나중에 수정할 것(팀프로젝트 끝나고)
+  public boolean login(LoginRequestDto requestDto) {
+    User findUser = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(
+        () -> new NotFoundException(UserErrorCode.USER_NOT_FOUND)
+    );
+    if (!findUser.getPassword().equals(requestDto.getPassword())) {
+      throw new NotFoundException(UserErrorCode.USER_NOT_FOUND);
+    }
+    return true;
+  }
+ */
 }
