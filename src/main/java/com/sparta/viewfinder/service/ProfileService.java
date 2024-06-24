@@ -11,6 +11,7 @@ import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.exception.UserErrorCode;
 import com.sparta.viewfinder.repository.ProfileRepository;
 import com.sparta.viewfinder.repository.UserRepository;
+import com.sparta.viewfinder.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +36,8 @@ public class ProfileService {
     }
 
     @Transactional
-    public ProfileUpdateResponseDto updateProfile(Long userId, ProfileUpdateRequestDto profileUpdateRequestDto) {
-        User user = userRepository.findById(userId).orElseThrow(
+    public ProfileUpdateResponseDto updateProfile(UserDetailsImpl userDetails, ProfileUpdateRequestDto profileUpdateRequestDto) {
+        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 ()-> new NotFoundException(UserErrorCode.USER_NOT_FOUND)
         );
         Profile profile = profileRepository.findByUserId(user.getId()).orElseThrow(
