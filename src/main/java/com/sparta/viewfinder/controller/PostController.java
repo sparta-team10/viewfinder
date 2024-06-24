@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/posts")
 public class PostController {
     private final PostService service;
-    private static final String DELTE_POST = "게시글이 삭제 되었습니다.";
+    private static final String DELETE_POST = "게시글이 삭제 되었습니다.";
 
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(
@@ -59,6 +59,6 @@ public class PostController {
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         service.deletePost(id, userDetails);
-        return ResponseEntity.ok().body(DELTE_POST);
+        return ResponseEntity.ok().body(DELETE_POST);
     }
 }
