@@ -5,10 +5,12 @@ import com.sparta.viewfinder.dto.CommentResponseDto;
 import com.sparta.viewfinder.entity.Comment;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
+import com.sparta.viewfinder.entity.UserRoleEnum;
 import com.sparta.viewfinder.exception.*;
 import com.sparta.viewfinder.repository.CommentRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
+import com.sparta.viewfinder.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,16 +29,15 @@ public class CommentService {
     private final UserRepository userRepository;
 
     // 댓글 생성, 등록
-    public CommentResponseDto createComment(Long userId, Long postId, CommentRequestDto commentRequestDto) {
+    public CommentResponseDto createComment(
+            UserDetailsImpl userDetails, Long postId, CommentRequestDto commentRequestDto) {
         // 사용자를 찾을 수 없을 때
-        User user = userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 () -> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
-
 
         // 게시물을 찾을 수 없을 때 -> Post에 관한 ErrorCode 클래스 만들고 사용
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND));
-
 
         Comment comment = new Comment(user, post, commentRequestDto.getContent());
         commentRepository.save(comment);
@@ -52,42 +53,46 @@ public class CommentService {
         }
 
         List<Comment> commentList = commentRepository.findAllByPostId(postId);
-        List<CommentResponseDto> res = new ArrayList<>();
+        List<CommentResponseDto> responseDtoList = new ArrayList<>();
 
         for (Comment comment : commentList) {
             Long userId = comment.getUser().getId();
-            res.add(new CommentResponseDto(comment));
+            responseDtoList.add(new CommentResponseDto(comment));
         }
-        return res;
+        return responseDtoList;
     }
 
     // 댓글 수정
     @Transactional
-    public CommentResponseDto updateComment(Long userId, Long commentId,
-                                            CommentRequestDto commentRequestDto) {
-        // 해당 댓글이 없는경우 -> Comment에 관한 ErrorCode 클래스 만들고 사용
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new NotFoundException(CommentErrorCode.COMMENT_NOT_FOUND));
-
-        // 본인 작성 댓글만 수정 가능
-        if (!Objects.equals(comment.getUser().getId(), userId)) {
-            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
-        }
-        comment.update(commentRequestDto);
+    public CommentResponseDto updateComment(
+        UserDetailsImpl userDetails, Long commentId, CommentRequestDto requestDto) {
+        Comment comment = findComment(commentId, userDetails.getUser());
+        comment.update(requestDto);
         return new CommentResponseDto(comment);
     }
 
     // 댓글 삭제
-    public void deleteComment(Long commentId, Long userId) {
-        // 해당 댓글이 없는경우 -> Comment에 관한 ErrorCode 클래스 만들고 사용
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new NotFoundException(CommentErrorCode.COMMENT_NOT_FOUND));
-
-        // 본인 작성 댓글만 수정 가능
-        if (!Objects.equals(comment.getUser().getId(), userId)) {
-            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
-        }
+    public void deleteComment(Long commentId, UserDetailsImpl userDetails) {
+        Comment comment = findComment(commentId, userDetails.getUser());
         commentRepository.delete(comment);
     }
 
+    //본인 댓글 확인
+    private Comment findComment(Long commentId, User user){
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+            () -> new NotFoundException(CommentErrorCode.COMMENT_NOT_FOUND));
+
+        validateUser(comment, user);
+        return comment;
+    }
+
+    //본인 확인 및 어드민 체크
+    private void validateUser(Comment comment, User user){
+        boolean invalidUser = !Objects.equals(comment.getUser().getId(), user.getId());
+        boolean invalidAdmin = !UserRoleEnum.ADMIN.equals(comment.getUser().getUserRole());
+
+        if (invalidUser || invalidAdmin) {
+            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
+        }
+    }
 }

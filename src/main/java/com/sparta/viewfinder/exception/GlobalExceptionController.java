@@ -1,6 +1,5 @@
-package com.sparta.viewfinder.controller;
+package com.sparta.viewfinder.exception;
 
-import com.sparta.viewfinder.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

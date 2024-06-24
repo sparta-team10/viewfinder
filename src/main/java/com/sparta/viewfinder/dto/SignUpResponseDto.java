@@ -10,7 +10,6 @@ public class SignUpResponseDto {
     private String username;
     private String name;
     private String email;
-//    private String creatAt;
 
     public SignUpResponseDto(User user) {
         this.username = user.getUsername();

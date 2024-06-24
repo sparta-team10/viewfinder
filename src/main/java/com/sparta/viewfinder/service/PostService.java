@@ -2,8 +2,11 @@ package com.sparta.viewfinder.service;
 
 import com.sparta.viewfinder.dto.PostRequestDto;
 import com.sparta.viewfinder.dto.PostResponseDto;
+import com.sparta.viewfinder.entity.Comment;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
+import com.sparta.viewfinder.entity.UserRoleEnum;
+import com.sparta.viewfinder.exception.CommentErrorCode;
 import com.sparta.viewfinder.exception.CommonErrorCode;
 import com.sparta.viewfinder.exception.MismatchException;
 import com.sparta.viewfinder.exception.NotFoundException;
@@ -29,16 +32,18 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public PostResponseDto createPost(UserDetailsImpl userDetails, PostRequestDto postRequestDto) {
-        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(() -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        Post post = new Post(user, postRequestDto.getContent());
+    public PostResponseDto createPost(UserDetailsImpl userDetails, PostRequestDto requestDto) {
+        User user = userRepository.findById(userDetails.getUser().getId())
+            .orElseThrow(() -> new NotFoundException(UserErrorCode.USER_NOT_FOUND));
+        Post post = new Post(user, requestDto.getContent());
         postRepository.save(post);
 
         return new PostResponseDto(post);
     }
 
-    public PostResponseDto readPost(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException(CommonErrorCode.RESOURCE_NOT_FOUND));
+    public PostResponseDto readPost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(
+            () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND));
         return new PostResponseDto(post);
     }
 
@@ -56,31 +61,38 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto updatePost(Long id, UserDetailsImpl userDetails, PostRequestDto requestDto) {
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND)
-        );
-
-        // 본인 작성 댓글만 수정 가능
-        if (!Objects.equals(post.getUser().getId(), userDetails.getUser().getId())) {
-            throw new NotFoundException(UserErrorCode.USER_NOT_MATCH);
-        }
-
+    public PostResponseDto updatePost(
+            Long postId, UserDetailsImpl userDetails, PostRequestDto requestDto) {
+        Post post = findPost(postId, userDetails.getUser());
         post.update(requestDto);
         return new PostResponseDto(post);
     }
 
     @Transactional
-    public void deletePost(Long id, UserDetailsImpl userDetails) {
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND)
-        );
-
-        // 본인 작성 댓글만 삭제 가능
-        if (!Objects.equals(post.getUser().getId(), userDetails.getUser().getId())) {
-            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
-        }
+    public void deletePost(Long postId, UserDetailsImpl userDetails) {
+        Post post = findPost(postId, userDetails.getUser());
         postRepository.delete(post);
     }
+
+    //본인 게시글 확인
+    private Post findPost(Long postId, User user){
+        Post post = postRepository.findById(postId).orElseThrow(
+            () -> new NotFoundException(PostErrorCode.POST_NOT_FOUND));
+
+        validateUser(post, user);
+        return post;
+    }
+
+    //본인 확인 및 어드민 체크
+    private void validateUser(Post post, User user){
+        boolean invalidUser = !Objects.equals(post.getUser().getId(), user.getId());
+        boolean invalidAdmin = !UserRoleEnum.ADMIN.equals(post.getUser().getUserRole());
+
+        if (invalidUser || invalidAdmin) {
+            throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
+        }
+    }
+
+
 
 }
