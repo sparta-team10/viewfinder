@@ -16,6 +16,7 @@ import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
 import com.sparta.viewfinder.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -86,13 +88,10 @@ public class PostService {
     //본인 확인 및 어드민 체크
     private void validateUser(Post post, User user){
         boolean invalidUser = !Objects.equals(post.getUser().getId(), user.getId());
-        boolean invalidAdmin = !UserRoleEnum.ADMIN.equals(post.getUser().getUserRole());
+        boolean invalidAdmin = !UserRoleEnum.ADMIN.equals(user.getUserRole());
 
-        if (invalidUser || invalidAdmin) {
+        if (invalidAdmin && invalidUser) {
             throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
     }
-
-
-
 }

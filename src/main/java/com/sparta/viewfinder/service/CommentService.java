@@ -91,7 +91,7 @@ public class CommentService {
         boolean invalidUser = !Objects.equals(comment.getUser().getId(), user.getId());
         boolean invalidAdmin = !UserRoleEnum.ADMIN.equals(comment.getUser().getUserRole());
 
-        if (invalidUser || invalidAdmin) {
+        if (invalidAdmin && invalidUser) {
             throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
     }
