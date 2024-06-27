@@ -3,7 +3,9 @@ package com.sparta.viewfinder.entity;
 import com.sparta.viewfinder.exception.LikeErrorCode;
 import com.sparta.viewfinder.exception.MismatchException;
 import java.util.Objects;
+import lombok.Getter;
 
+@Getter
 public enum ContentEnumType {
   POST("post"), COMMENT("comment");
 

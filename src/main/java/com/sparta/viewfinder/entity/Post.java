@@ -31,6 +31,8 @@ public class Post extends Timestamped{
     @Column
     private String content;
 
+    private Long likeCount;
+
     public Post(User user, String content) {
         this.user = user;
         this.content = content;
@@ -40,4 +42,7 @@ public class Post extends Timestamped{
         this.content = requestDto.getContent();
     }
 
+    public void UpLikeCount() {
+        likeCount++;
+    }
 }
