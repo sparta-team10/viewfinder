@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
   public JwtAuthenticationFilter(JwtTokenHelper jwtTokenHelper) {
     this.jwtTokenHelper = jwtTokenHelper;
-    setFilterProcessesUrl("/login");
+//    setFilterProcessesUrl("/login");
   }
 
   @Override
@@ -69,8 +69,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     response.addHeader(JwtTokenHelper.REFRESH_TOKEN_HEADER, refreshToken);
     jwtTokenHelper.saveRefreshToken(username, refreshToken);
 
-    response.setCharacterEncoding("utf-8");
-    response.getWriter().write("상태 : " + response.getStatus() + ", 로그인 성공");
+//    response.setCharacterEncoding("utf-8");
+//    response.getWriter().write("상태 : " + response.getStatus() + ", 로그인 성공");
 
   }
 
