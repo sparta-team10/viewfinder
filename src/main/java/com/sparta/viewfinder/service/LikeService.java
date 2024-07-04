@@ -5,6 +5,7 @@ import com.sparta.viewfinder.entity.Comment;
 import com.sparta.viewfinder.entity.ContentEnumType;
 import com.sparta.viewfinder.entity.Like;
 import com.sparta.viewfinder.entity.Post;
+import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.exception.CommonErrorCode;
 import com.sparta.viewfinder.exception.DuplicatedException;
 import com.sparta.viewfinder.exception.LikeErrorCode;
@@ -16,9 +17,12 @@ import com.sparta.viewfinder.repository.CommentRepository;
 import com.sparta.viewfinder.repository.LikeRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -40,18 +44,14 @@ public class LikeService {
   }
 
   private void isContentAndSelfLikeCheck(long userId, long contentId, String contentType) {
-    if (Objects.equals(contentType, ContentEnumType.COMMENT.getType())){
-      Comment comment = commentRepository.findById(contentId).orElseThrow(
-
-      );
+    if (Objects.equals(contentType, ContentEnumType.COMMENT.getType())) {
+      Comment comment = commentRepository.findById(contentId).orElseThrow();
       if(comment.getUser().getId() == userId)
         throw new SelfLikeException(LikeErrorCode.SELF_LIKE);
       comment.UpLikeCount();
-    }
-    else if (Objects.equals(contentType, ContentEnumType.POST.getType())){
-      Post post = postRepository.findById(contentId).orElseThrow(
-          ()-> new NotFoundException(PostErrorCode.POST_NOT_FOUND)
-      );
+    } else if (Objects.equals(contentType, ContentEnumType.POST.getType())) {
+      Post post = postRepository.findById(contentId)
+          .orElseThrow(()-> new NotFoundException(PostErrorCode.POST_NOT_FOUND));
       if (post.getUser().getId() == userId)
         throw new SelfLikeException(LikeErrorCode.SELF_LIKE);
       post.UpLikeCount();
@@ -70,6 +70,23 @@ public class LikeService {
     }
   }
 
+  public List<Like> findByPostLike(long userId) {
+    List<Like> likeList = likeRepository.findByUserId(userId);
+    return likeList.stream()
+        .filter(L -> L.getContentType() == ContentEnumType.POST)
+        .toList(); //(변수명 -> 조건식)
+  }
+
+  public List<Like> findByCommentLike(long userId) {
+    List<Like> likeList = likeRepository.findByUserId(userId);
+
+    return  likeList.stream()
+        .filter(P -> P.getContentType() == ContentEnumType.COMMENT)
+        .toList();
+  }
+
+
+
   public void deleteLike(long likeId, long UserId) {
     Like like = likeRepository.findById(likeId).orElseThrow(
         ()-> new NotFoundException(LikeErrorCode.LIKE_NOT_FOUND)
@@ -79,4 +96,6 @@ public class LikeService {
       throw new MismatchException(LikeErrorCode.USER_MISMATCH);
     likeRepository.delete(like);
   }
+
+
 }

@@ -1,20 +1,22 @@
 package com.sparta.viewfinder.service;
 
+import com.sparta.viewfinder.dto.LikeResponseDto;
 import com.sparta.viewfinder.dto.PostRequestDto;
 import com.sparta.viewfinder.dto.PostResponseDto;
-import com.sparta.viewfinder.entity.Comment;
+import com.sparta.viewfinder.entity.Like;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.entity.UserRoleEnum;
-import com.sparta.viewfinder.exception.CommentErrorCode;
-import com.sparta.viewfinder.exception.CommonErrorCode;
 import com.sparta.viewfinder.exception.MismatchException;
 import com.sparta.viewfinder.exception.NotFoundException;
 import com.sparta.viewfinder.exception.PostErrorCode;
 import com.sparta.viewfinder.exception.UserErrorCode;
+import com.sparta.viewfinder.repository.LikeRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
 import com.sparta.viewfinder.security.UserDetailsImpl;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +33,7 @@ import java.util.Objects;
 @Slf4j
 public class PostService {
 
+    private final LikeService likeService;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
@@ -93,5 +96,17 @@ public class PostService {
         if (invalidAdmin && invalidUser) {
             throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
+    }
+
+    public Page<Post> getLikedPosts(Long userId, int page) {
+        List<Like> postLikeList = likeService.findByPostLike(userId);
+
+
+        List<Long> likedPostIds = postLikeList.stream()
+            .map(Like::getContentId)
+            .collect(Collectors.toList());
+
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return postRepository.findAllByIdIn(likedPostIds, pageable);
     }
 }

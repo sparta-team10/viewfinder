@@ -2,6 +2,7 @@ package com.sparta.viewfinder.controller;
 
 import com.sparta.viewfinder.dto.PostRequestDto;
 import com.sparta.viewfinder.dto.PostResponseDto;
+import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.security.UserDetailsImpl;
 import com.sparta.viewfinder.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
     private final PostService service;
     private static final String DELETE_POST = "게시글이 삭제 되었습니다.";
+    private final PostService postService;
 
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(
@@ -44,6 +46,12 @@ public class PostController {
         PostResponseDto postResponseDto = service.readPost(id);
         return ResponseEntity.ok(postResponseDto);
     }
+
+   @GetMapping("/{id}/likes")
+    public Page<Post> getLikedPosts(@RequestParam Long userId, @RequestParam int page) {
+    return postService.getLikedPosts(userId, page);
+}
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<PostResponseDto> updatePost(

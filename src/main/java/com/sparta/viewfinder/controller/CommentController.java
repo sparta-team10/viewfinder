@@ -2,10 +2,12 @@ package com.sparta.viewfinder.controller;
 
 import com.sparta.viewfinder.dto.CommentRequestDto;
 import com.sparta.viewfinder.dto.CommentResponseDto;
+import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.security.UserDetailsImpl;
 import com.sparta.viewfinder.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -59,5 +61,10 @@ public class CommentController {
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
     commentService.deleteComment(id, userDetails);
     return ResponseEntity.ok().body(DELETE_COMMENT_SUCCESS_MESSAGE);
+  }
+
+  @GetMapping("/{id}/likes")
+  public Page<Post> getLikedComments(@RequestParam Long userId, @RequestParam int page) {
+    return commentService.getLikedComments(userId, page);
   }
 }

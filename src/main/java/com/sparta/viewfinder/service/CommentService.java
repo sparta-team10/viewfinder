@@ -3,6 +3,7 @@ package com.sparta.viewfinder.service;
 import com.sparta.viewfinder.dto.CommentRequestDto;
 import com.sparta.viewfinder.dto.CommentResponseDto;
 import com.sparta.viewfinder.entity.Comment;
+import com.sparta.viewfinder.entity.Like;
 import com.sparta.viewfinder.entity.Post;
 import com.sparta.viewfinder.entity.User;
 import com.sparta.viewfinder.entity.UserRoleEnum;
@@ -11,7 +12,12 @@ import com.sparta.viewfinder.repository.CommentRepository;
 import com.sparta.viewfinder.repository.PostRepository;
 import com.sparta.viewfinder.repository.UserRepository;
 import com.sparta.viewfinder.security.UserDetailsImpl;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +30,12 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class CommentService {
 
+    private final LikeService likeService;
+
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+
 
     // 댓글 생성, 등록
     public CommentResponseDto createComment(
@@ -94,5 +103,18 @@ public class CommentService {
         if (invalidAdmin && invalidUser) {
             throw new MismatchException(UserErrorCode.USER_NOT_MATCH);
         }
+    }
+
+    public Page<Post> getLikedComments(Long userId, int page) {
+
+        List<Like> CommentLikeList = likeService.findByCommentLike(userId);
+
+
+        List<Long> likedCommentsIds = CommentLikeList.stream()
+            .map(Like::getContentId)
+            .collect(Collectors.toList());
+
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return postRepository.findAllByIdIn(likedCommentsIds, pageable);
     }
 }

@@ -55,7 +55,7 @@ public class WebSecurityConfig {
     return new JwtAuthorizationFilter(jwtTokenHelper, userDetailsService);
   }
 
-
+  //제일 먼저 실행되는 필터
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     // CSRF 설정

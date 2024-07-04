@@ -1,6 +1,8 @@
 package com.sparta.viewfinder.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +23,7 @@ public class User extends Timestamped{
 
     private String name;
 
+    @NotNull
     private String email;
 
     @Enumerated(value = EnumType.STRING)

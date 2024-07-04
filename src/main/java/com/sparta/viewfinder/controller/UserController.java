@@ -24,7 +24,6 @@ public class UserController {
     private final UserService userService;
     private final JwtTokenHelper jwtTokenHelper;
 
-    private static final String SUCCESS_LOGIN = "로그인 성공";
     private static final String SUCCESS_LOGOUT = "로그아웃 성공";
     private static final String SUCCESS_SIGN_UP = "회원가입에 성공하였습니다.";
     private static final String WITHDRAW_SUCCESS_MESSAGE = "회원탈퇴에 성공했습니다.";
@@ -42,7 +41,6 @@ public class UserController {
     public ResponseEntity<String> withDraw(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody WithDrawUserRequestDto requestDto) {
-
         userService.withDraw(userDetails.getUser().getId(), requestDto.getPassword());
         return ResponseEntity.ok().body(WITHDRAW_SUCCESS_MESSAGE);
     }
